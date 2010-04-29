@@ -201,7 +201,7 @@ lr_sess_i.titles.each_with_index do |title, index|
   tweet = lr_sess_i.header + lr_sess_i.summaries[index] + lr_sess_i.titles[index] + " - " + lr_sess_i.links[index]
   unless tweet_history.past_in_the_tweet?(entry_id)
 
-# TODO : デバックコードを削除する
+# TODO : デバックコードを削除する。
 #    twitter_oauth.post(tweet)
 
 #    if twitter_oauth.response_success?
