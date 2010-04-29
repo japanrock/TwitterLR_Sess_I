@@ -80,7 +80,7 @@ class LrSessI < Feed
 
       (feed/'entry'/'title').each do |title|
         title = HTMLEntities.new.decode(title.inner_html) # TODO : 30文字以内にカットする 
-        @titles << titleG
+        @titles << title
       end
 
       (feed/'entry'/'summary').each do |summary|
