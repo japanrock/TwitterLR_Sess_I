@@ -79,12 +79,12 @@ class LrSessI < Feed
       end
 
       (feed/'entry'/'title').each do |title|
-        title = HTMLEntities.new.decode(title.inner_html) # 30文字以内にカットする 
-        @titles << title
+        title = HTMLEntities.new.decode(title.inner_html) # TODO : 30文字以内にカットする 
+        @titles << titleG
       end
 
       (feed/'entry'/'summary').each do |summary|
-        summary =  HTMLEntities.new.decode(summary.inner_html) # 80文字以内にカットする 
+        summary =  HTMLEntities.new.decode(summary.inner_html) # TODO : 80文字以内にカットする。HTMLタグをカットする。 
         @summaries << summary
       end
 
@@ -199,14 +199,16 @@ tweet_count = 0
 lr_sess_i.titles.each_with_index do |title, index|
   entry_id = lr_sess_i.entry_ids[index]
   tweet = lr_sess_i.header + lr_sess_i.summaries[index] + lr_sess_i.titles[index] + " - " + lr_sess_i.links[index]
-puts entry_id
-puts tweet
   unless tweet_history.past_in_the_tweet?(entry_id)
+
+# TODO : デバックコードを削除する
 #    twitter_oauth.post(tweet)
 
 #    if twitter_oauth.response_success?
       tweet_history.write(entry_id)
       tweet_count = tweet_count + 1
+puts entry_id
+puts tweet
 #    end
   end
 
