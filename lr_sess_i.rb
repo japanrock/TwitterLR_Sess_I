@@ -15,6 +15,7 @@ require 'parsedate'
 require "kconv"
 require 'htmlentities'
 require File.dirname(__FILE__) + '/twitter_oauth'
+require File.dirname(__FILE__) + '/shorten_url'
 
 # Usage:
 #  1. このファイルやディレクトリを同じディレクトリに配置します。
@@ -239,6 +240,7 @@ end
 
 twitter_oauth = TwitterOauth.new
 tweet_history = TweetHistory.new
+shorten_url   = ShortenURL.new
 
 # LrSessI Feed Post
 lr_sess_i = LrSessI.new
@@ -246,10 +248,15 @@ lr_sess_i.feed
 
 tweet_count = 0
 lr_sess_i.titles.each_with_index do |title, index|
+  
   entry_id = lr_sess_i.entry_ids[index]
 
+  # URL短縮
+  shorten_url.get_short_url(lr_sess_i.links[index])
+  short_url = shorten_url.short_url
+
   # tweet(136文字前後) => summary(80文字以内) + " - "(3文字) + title(30文字以内) + " - "(3文字) + link(20文字前後) 
-  tweet = lr_sess_i.summaries[index] + " - " + lr_sess_i.titles[index] + " - " + lr_sess_i.links[index]
+  tweet = lr_sess_i.summaries[index] + " - " + lr_sess_i.titles[index] + " - " + short_url
 
   unless tweet_history.past_in_the_tweet?(entry_id)
     twitter_oauth.post(tweet)
