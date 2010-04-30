@@ -117,6 +117,10 @@ class LrSessI < Feed
     2
   end
 
+  def seo_comment
+    "ライブレボリューション会社説明会感想"
+  end
+
   private
 
   # 改行カット
@@ -154,7 +158,7 @@ class LrSessI < Feed
   end
 
   def summary_max_num
-    80
+    62
   end
 
   def title_max_num
@@ -255,8 +259,8 @@ lr_sess_i.titles.each_with_index do |title, index|
   shorten_url.get_short_url(lr_sess_i.links[index])
   short_url = shorten_url.short_url
 
-  # tweet(136文字前後) => summary(80文字以内) + " - "(3文字) + title(30文字以内) + " - "(3文字) + link(20文字前後) 
-  tweet = lr_sess_i.summaries[index] + " - " + lr_sess_i.titles[index] + " - " + short_url
+  # tweet(136文字前後) => summary(62文字以内) + " - "(3文字) + title(30文字以内) + " - "(3文字) + "ライブレボリューション会社説明会感想"(18文字) + " "(1文字) + link(20文字前後) 
+  tweet = lr_sess_i.summaries[index] + " - " + lr_sess_i.titles[index] + " - " + lr_sess_i.seo_comment + " " + short_url
 
   unless tweet_history.past_in_the_tweet?(entry_id)
     twitter_oauth.post(tweet)
