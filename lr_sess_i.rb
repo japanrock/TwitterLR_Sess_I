@@ -84,7 +84,9 @@ class LrSessI < Feed
       end
 
       (feed/'entry'/'summary').each do |summary|
-        summary =  HTMLEntities.new.decode(summary.inner_html) # TODO : 80文字以内にカットする。HTMLタグをカットする。 
+        summary = HTMLEntities.new.decode(summary.inner_html)
+        summary = summary.gsub(/<\/?[^>]*>/, '') # HTMLタグをカット
+        summary = summary # 文字を80文字以内にカット
         @summaries << summary
       end
 
