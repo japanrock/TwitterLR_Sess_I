@@ -247,10 +247,11 @@ lr_sess_i.feed
 tweet_count = 0
 lr_sess_i.titles.each_with_index do |title, index|
   entry_id = lr_sess_i.entry_ids[index]
+
   # tweet(136文字前後) => summary(80文字以内) + " - "(3文字) + title(30文字以内) + " - "(3文字) + link(20文字前後) 
   tweet = lr_sess_i.summaries[index] + " - " + lr_sess_i.titles[index] + " - " + lr_sess_i.links[index]
-  unless tweet_history.past_in_the_tweet?(entry_id)
 
+  unless tweet_history.past_in_the_tweet?(entry_id)
     twitter_oauth.post(tweet)
 
     if twitter_oauth.response_success?
@@ -261,6 +262,7 @@ lr_sess_i.titles.each_with_index do |title, index|
 
   break if tweet_count == lr_sess_i.tweet_count
 end
+
 # tweet_historyファイルの肥大化防止
 tweet_history = TweetHistory.new
 tweet_history.maintenance
