@@ -79,14 +79,16 @@ class LrSessI < Feed
       end
 
       (feed/'entry'/'title').each do |title|
-        title = HTMLEntities.new.decode(title.inner_html) # TODO : 30文字以内にカットする 
+        title = HTMLEntities.new.decode(title.inner_html) 
+        title = condition_max_num(title, 'title')
         @titles << title
       end
 
       (feed/'entry'/'summary').each do |summary|
         summary = HTMLEntities.new.decode(summary.inner_html)
-        summary = summary.gsub(/<\/?[^>]*>/, '') # HTMLタグをカット
-        summary = summary # 文字を80文字以内にカット
+        summary = cut_html_tag(summary)
+        summary = cut_line_break(summary)
+        summary = condition_max_num(summary, 'summary')
         @summaries << summary
       end
 
@@ -98,6 +100,7 @@ class LrSessI < Feed
         @entry_ids << entry_id.inner_html
       end
 
+      # 古いものからTwieetするため
       @publisheds.reverse!
       @titles.reverse!
       @summaries.reverse!
@@ -108,13 +111,57 @@ class LrSessI < Feed
     self
   end
 
-  def header
-    ''
-  end
-
   # 一度につぶやく最大数
   def tweet_count
     2
+  end
+
+  private
+
+  # 改行カット
+  def cut_line_break(str)
+    str.gsub(/\r\n|\r|\n/, '')
+  end
+
+  # HTMLタグをカット
+  def cut_html_tag(str)
+    str.gsub(/<\/?[^>]*>/, '')
+  end
+
+  # str文字数がxxxx_max_numを越えていたら、
+  # 末尾にmore_markを付与してxxxx_max_num以内に収める
+  def condition_max_num(str, kind = 'summary')
+   case kind
+    when 'summary'
+      if utf8_string_count(str) > summary_max_num
+        str = str.split(//u)[0..summary_max_num - more_mark.size - 1].join + more_mark
+      end
+    when 'title'
+      str = str.scan(/（.*.）/).join # （）内のみ取り出す
+      str = str.gsub(/（|）/ , '') #（）を削除する
+
+      if utf8_string_count(str) > title_max_num 
+        str =  str.split(//u)[0..title_max_num - more_mark.size - 1].join + more_mark
+      end
+    end
+
+   str
+  end
+
+  def utf8_string_count(str)
+    str.split(//u).length
+  end
+
+  def summary_max_num
+    80
+  end
+
+  def title_max_num
+    30
+  end
+
+  def more_mark
+    "..."
   end
 end
 
@@ -171,7 +218,7 @@ class TweetHistory
       tweet_history.print ''
       tweet_history.close
       
-      # 最新の２０行のみ保存
+      # stay_history_count行のみ保存
       tweet_history = File.open(File.dirname(__FILE__) + '/tweet_history', 'a+')
 
       stay_tweet_histories.reverse!.each do |history|
@@ -200,18 +247,16 @@ lr_sess_i.feed
 tweet_count = 0
 lr_sess_i.titles.each_with_index do |title, index|
   entry_id = lr_sess_i.entry_ids[index]
-  tweet = lr_sess_i.header + lr_sess_i.summaries[index] + lr_sess_i.titles[index] + " - " + lr_sess_i.links[index]
+  # tweet(136文字前後) => summary(80文字以内) + " - "(3文字) + title(30文字以内) + " - "(3文字) + link(20文字前後) 
+  tweet = lr_sess_i.summaries[index] + " - " + lr_sess_i.titles[index] + " - " + lr_sess_i.links[index]
   unless tweet_history.past_in_the_tweet?(entry_id)
 
-# TODO : デバックコードを削除する。
-#    twitter_oauth.post(tweet)
+    twitter_oauth.post(tweet)
 
-#    if twitter_oauth.response_success?
+    if twitter_oauth.response_success?
       tweet_history.write(entry_id)
       tweet_count = tweet_count + 1
-puts entry_id
-puts tweet
-#    end
+    end
   end
 
   break if tweet_count == lr_sess_i.tweet_count
