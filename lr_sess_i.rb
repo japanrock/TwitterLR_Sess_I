@@ -118,7 +118,7 @@ class LrSessI < Feed
   end
 
   def seo_comment
-    "ライブレボリューション会社説明会感想"
+    "ライブレボリューション会社説明会感想/就活"
   end
 
   private
@@ -158,7 +158,7 @@ class LrSessI < Feed
   end
 
   def summary_max_num
-    62
+    59
   end
 
   def title_max_num
