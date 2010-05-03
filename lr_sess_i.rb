@@ -255,14 +255,13 @@ lr_sess_i.titles.each_with_index do |title, index|
   
   entry_id = lr_sess_i.entry_ids[index]
 
-  # URL短縮
-  shorten_url.get_short_url(lr_sess_i.links[index])
-  short_url = shorten_url.short_url
-
-  # tweet(136文字前後) => summary(62文字以内) + " - "(3文字) + title(30文字以内) + " - "(3文字) + "ライブレボリューション会社説明会感想"(18文字) + " "(1文字) + link(20文字前後) 
-  tweet = lr_sess_i.summaries[index] + " - " + lr_sess_i.titles[index] + " - " + lr_sess_i.seo_comment + " " + short_url
-
   unless tweet_history.past_in_the_tweet?(entry_id)
+    # URL短縮
+    shorten_url.get_short_url(lr_sess_i.links[index])
+    short_url = shorten_url.short_url
+
+    # tweet(136文字前後) => summary(59文字以内) + " - "(3文字) + title(30文字以内) + " - "(3文字) + "ライブレボリューション会社説明会感想/就活"(21文字) + " "(1文字) + link(20文字前後) 
+    tweet = lr_sess_i.summaries[index] + " - " + lr_sess_i.titles[index] + " - " + lr_sess_i.seo_comment + " " + short_url
     twitter_oauth.post(tweet)
 
     if twitter_oauth.response_success?
