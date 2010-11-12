@@ -66,7 +66,7 @@ class LrSessI < Feed
   end
 
   def feed
-    make_elems(open_feed("/xml/each_feed.xml"))
+    make_elems(open_feed("/xml/each_feed_2.xml"))
   end
 
   # Hpricotのオブジェクトから各インスタンス変数に配列としてセットします。
@@ -114,11 +114,11 @@ class LrSessI < Feed
 
   # 一度につぶやく最大数
   def tweet_count
-    2
+    1
   end
 
   def seo_comment
-    "ライブレボリューション会社説明会感想・コメント・評判/就活"
+    "ライブレボリューション：LR自己分析セミナー感想・評判・コメント/就活"
   end
 
   private
@@ -158,7 +158,7 @@ class LrSessI < Feed
   end
 
   def summary_max_num
-    54
+    48
   end
 
   def title_max_num
@@ -260,7 +260,7 @@ lr_sess_i.titles.each_with_index do |title, index|
     shorten_url.get_short_url(lr_sess_i.links[index])
     short_url = shorten_url.short_url
 
-    # tweet(136文字前後) => summary(59文字以内) + " - "(3文字) + title(30文字以内) + " - "(3文字) + "ライブレボリューション会社説明会感想/就活"(21文字) + " "(1文字) + link(20文字前後) 
+    # tweet(136文字前後) => summary(56文字以内) + " - "(3文字) + title(30文字以内) + " - "(3文字) + "ライブレボリューション：LRアカデミー感想/就活"(24文字) + " "(1文字) + link(20文字前後) 
     tweet = lr_sess_i.summaries[index] + " - " + lr_sess_i.titles[index] + " - " + lr_sess_i.seo_comment + " " + short_url
     twitter_oauth.post(tweet)
 
